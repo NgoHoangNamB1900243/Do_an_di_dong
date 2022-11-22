@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:myshop/ui/products/products_manager.dart';
-
-import '../../models/product.dart';
+import 'package:myshop/ui/screens.dart';
 import 'package:provider/provider.dart';
-
-import 'edit_products_screen.dart';
+import '../../models/product.dart';
 
 class UserProductListTile extends StatelessWidget {
   final Product product;
-
   const UserProductListTile(
     this.product, {
     super.key,

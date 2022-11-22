@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/http_exception.dart';
-import '../products/edit_products_screen.dart';
 import '../shared/dialog_utils.dart';
 
 import 'auth_manager.dart';

@@ -1,22 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:myshop/ui/products/products_manager.dart';
 import 'package:provider/provider.dart';
-
 import '../../models/product.dart';
-
 import '../cart/cart_manager.dart';
 import 'product_detail_screen.dart';
 
-import '../../ui/products/products_manager.dart';
-
 class ProductGridTile extends StatelessWidget {
-  const ProductGridTile(
-    this.product, {
-    super.key,
-  });
-
+  const ProductGridTile(this.product, {super.key});
   final Product product;
-
   @override
   Widget build(BuildContext context) {
     return ClipRRect(

@@ -6,8 +6,7 @@ import 'order_item_card.dart';
 import '../shared/app_drawer.dart';
 
 class OrdersScreen extends StatelessWidget {
-  static const routeName = '/order';
-
+  static const routeName = '/orders';
   const OrdersScreen({super.key});
 
   @override
@@ -19,10 +18,10 @@ class OrdersScreen extends StatelessWidget {
       ),
       drawer: const AppDrawer(),
       body: Consumer<OrdersManager>(
-        builder: (ctxx, ordersManager, child) {
+        builder: (ctx, ordersManager, child) {
           return ListView.builder(
             itemCount: ordersManager.orderCount,
-            itemBuilder: (ctx, i) => OrderItemCard(ordersManager.orders[i]),
+            itemBuilder: (ctx, i) => OrderItemCard(ordersManager.order[i]),
           );
         },
       ),

@@ -39,7 +39,7 @@ class TopRightBadge extends StatelessWidget {
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }

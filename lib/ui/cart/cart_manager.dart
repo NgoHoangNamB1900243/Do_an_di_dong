@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:myshop/models/product.dart';
-import '../../models/cart_item.dart';
 import 'package:flutter/foundation.dart';
+
+import '../../models/cart_item.dart';
 import '../../models/product.dart';
 
 class CartManager with ChangeNotifier {
@@ -9,12 +10,12 @@ class CartManager with ChangeNotifier {
     'p1': CartItem(
       id: 'c1',
       title: 'Nike_Air_Jordan_1_Retro_High_Og',
-      price: 160,
       quantity: 2,
+      price: 160,
     ),
   };
 
-  int get ProductCount {
+  int get productCount {
     return _items.length;
   }
 
@@ -22,7 +23,7 @@ class CartManager with ChangeNotifier {
     return _items.values.toList();
   }
 
-  Iterable<MapEntry<String, CartItem>> get ProductEntries {
+  Iterable<MapEntry<String, CartItem>> get productEntries {
     return {..._items}.entries;
   }
 
@@ -36,6 +37,7 @@ class CartManager with ChangeNotifier {
 
   void addItem(Product product) {
     if (_items.containsKey(product.id)) {
+      // change quantity...
       _items.update(
         product.id!,
         (existingCartItem) => existingCartItem.copyWith(
@@ -61,7 +63,7 @@ class CartManager with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeStringItem(String productId) {
+  void removeSingleItem(String productId) {
     if (!_items.containsKey(productId)) {
       return;
     }
@@ -82,6 +84,4 @@ class CartManager with ChangeNotifier {
     _items = {};
     notifyListeners();
   }
-
-  void removeSingleItem(String s) {}
 }

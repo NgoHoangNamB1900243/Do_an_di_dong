@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../models/cart_item.dart';
 import '../../models/order_item.dart';
@@ -7,14 +7,13 @@ class OrdersManager with ChangeNotifier {
   final List<OrderItem> _orders = [
     OrderItem(
       id: 'o1',
-      amount: 320.0,
+      amount: 320,
       products: [
         CartItem(
-          id: 'c1',
-          title: 'Nike_Air_Jordan_1_Retro_High_Og',
-          price: 160,
-          quantity: 2,
-        )
+            id: 'c1',
+            title: 'Nike_Air_Jordan_1_High_Og',
+            quantity: 2,
+            price: 160)
       ],
       dateTime: DateTime.now(),
     )
@@ -24,7 +23,7 @@ class OrdersManager with ChangeNotifier {
     return _orders.length;
   }
 
-  List<OrderItem> get orders {
+  List<OrderItem> get order {
     return [..._orders];
   }
 

@@ -24,11 +24,11 @@ Future<bool?> showConfirmDialog(BuildContext context, String message) {
   );
 }
 
-Future<void> ShowErrorDialog(BuildContext context, String message) {
+Future<void> showErrorDialog(BuildContext context, String message) {
   return showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Text('An Error occurred!'),
+      title: const Text('An Error Occurred!'),
       content: Text(message),
       actions: <Widget>[
         TextButton(
@@ -36,7 +36,7 @@ Future<void> ShowErrorDialog(BuildContext context, String message) {
           onPressed: () {
             Navigator.of(ctx).pop();
           },
-        )
+        ),
       ],
     ),
   );

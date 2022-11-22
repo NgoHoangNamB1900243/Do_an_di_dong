@@ -1,20 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:myshop/ui/cart/cart_manager.dart';
-import 'package:myshop/ui/orders/order_manager.dart';
-import 'package:myshop/ui/products/edit_products_screen.dart';
-
-import 'ui/products/products_manager.dart';
-import 'ui/products/product_detail_screen.dart';
-
-import 'ui/products/products_overview_screen.dart';
-import 'ui/products/user_products_screen.dart';
-
-import 'ui/cart/cart_screen.dart';
-import 'ui/orders/orders_screen.dart';
+import 'ui/screens.dart';
 import 'package:provider/provider.dart';
-import 'ui/screen.dart';
-import 'services/auth_service.dart';
 
 Future<void> main() async {
   await dotenv.load();
@@ -24,90 +11,77 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProxyProvider<AuthManager, ProductsManager>(
-          create: (ctx) => ProductsManager(),
-          update: (ctx, authManager, productsManager) {
-            productsManager!.authToken = authManager.authToken;
-            return productsManager;
-          },
+        ChangeNotifierProvider(
+          create: (context) => AuthManager(),
         ),
+        ChangeNotifierProxyProvider<AuthManager, ProductsManager>(
+            create: (ctx) => ProductsManager(),
+            update: (ctx, authManager, productsManager) {
+              productsManager!.authToken = authManager.authToken;
+              return productsManager;
+            }),
         ChangeNotifierProvider(
           create: (ctx) => CartManager(),
         ),
         ChangeNotifierProvider(
           create: (ctx) => OrdersManager(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => AuthManager(),
-        ),
       ],
-      child: Consumer<AuthManager>(
-        builder: (context, authManager, child) {
-          return MaterialApp(
-            title: 'My Shop',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              fontFamily: 'Lato',
-              colorScheme: ColorScheme.fromSwatch(
-                primarySwatch: Colors.blue,
-              ).copyWith(
-                secondary: Colors.deepOrange,
-              ),
+      child: Consumer<AuthManager>(builder: (context, authManager, child) {
+        return MaterialApp(
+          title: 'My Shop',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            fontFamily: 'Lato',
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.blue,
+            ).copyWith(
+              secondary: Colors.deepOrange,
             ),
-            home: authManager.isAuth
-                ? const ProductsOverviewScreen()
-                : FutureBuilder(
-                    future: authManager.tryAutoLogin(),
-                    builder: (context, snapshot) {
-                      return snapshot.connectionState == ConnectionState.waiting
-                          ? const SplashScreen()
-                          : const AuthScreen();
-                    },
-                  ),
-            routes: {
-              CartScreen.routeName: (ctx) => const CartScreen(),
-              OrdersScreen.routeName: (ctx) => const OrdersScreen(),
-              UserProductScreen.routeName: (ctx) => const UserProductScreen(),
-            },
-            onGenerateRoute: (settings) {
-              if (settings.name == EditProductScreen.routeName) {
-                final productId = settings.arguments as String?;
-                return MaterialPageRoute(
-                  builder: (ctx) {
-                    return EditProductScreen(
-                      productId != null
-                          ? ctx.read<ProductsManager>().findById(productId)
-                          : null,
-                    );
+          ),
+          home: authManager.isAuth
+              ? const ProductsOverviewScreen()
+              : FutureBuilder(
+                  future: authManager.tryAutoLogin(),
+                  builder: (context, snapshot) {
+                    return snapshot.connectionState == ConnectionState.waiting
+                        ? const SplashScreen()
+                        : const AuthScreen();
                   },
-                );
-              }
-              return null;
-            },
-          );
-        },
-      ),
+                ),
+          routes: {
+            CartScreen.routeName: (ctx) => const CartScreen(),
+            OrdersScreen.routeName: (ctx) => const OrdersScreen(),
+            UserProductsScreen.routeName: (ctx) => const UserProductsScreen(),
+          },
+          onGenerateRoute: (settings) {
+            if (settings.name == EditProductScreen.routeName) {
+              final productId = settings.arguments as String?;
+              return MaterialPageRoute(
+                builder: (ctx) {
+                  return EditProductScreen(
+                    productId != null
+                        ? ctx.read<ProductsManager>().findById(productId)
+                        : null,
+                  );
+                },
+              );
+            }
+
+            return null;
+          },
+        );
+      }),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override

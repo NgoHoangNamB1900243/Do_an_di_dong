@@ -31,12 +31,14 @@ class CartScreen extends StatelessWidget {
 
   Widget buildCartDetails(CartManager cart) {
     return ListView(
-      children: cart.ProductEntries.map(
-        (entry) => CartItemCard(
-          productId: entry.key,
-          cardItem: entry.value,
-        ),
-      ).toList(),
+      children: cart.productEntries
+          .map(
+            (entry) => CartItemCard(
+              productId: entry.key,
+              cardItem: entry.value,
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -57,7 +59,7 @@ class CartScreen extends StatelessWidget {
               label: Text(
                 '\$${cart.totalAmount.toStringAsFixed(2)}',
                 style: TextStyle(
-                  color: Theme.of(context).primaryTextTheme.headline6?.color,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
               backgroundColor: Theme.of(context).primaryColor,

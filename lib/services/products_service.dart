@@ -28,8 +28,8 @@ class ProductsService extends FirebaseService {
 
       final userFavoritesUrl =
           Uri.parse('$databaseUrl/userFavorites/$userId.json?auth=$token');
-      final userFavoritesResponse = await http.get(userFavoritesUrl);
-      final userFavoritesMap = json.decode(userFavoritesResponse.body);
+      final userFavoritesReponse = await http.get(userFavoritesUrl);
+      final userFavoritesMap = json.decode(userFavoritesReponse.body);
 
       productsMap.forEach((productId, product) {
         final isFavorite = (userFavoritesMap == null)
@@ -78,7 +78,7 @@ class ProductsService extends FirebaseService {
   Future<bool> updateProduct(Product product) async {
     try {
       final url =
-          Uri.parse('$databaseUrl/products/${product.id}.json?auth=#token');
+          Uri.parse('$databaseUrl/products/${product.id}.json?auth=$token');
       final response = await http.patch(
         url,
         body: json.encode(product.toJson()),
@@ -125,6 +125,7 @@ class ProductsService extends FirebaseService {
       if (response.statusCode != 200) {
         throw Exception(json.decode(response.body)['error']);
       }
+
       return true;
     } catch (error) {
       print(error);
