@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:myshop/ui/cart/cart_manager.dart';
 import 'package:myshop/ui/orders/order_manager.dart';
 import 'package:myshop/ui/products/edit_products_screen.dart';
@@ -12,8 +13,11 @@ import 'ui/products/user_products_screen.dart';
 import 'ui/cart/cart_screen.dart';
 import 'ui/orders/orders_screen.dart';
 import 'package:provider/provider.dart';
+import 'ui/screen.dart';
+import 'services/auth_service.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load();
   runApp(const MyApp());
 }
 
@@ -25,8 +29,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
+        ChangeNotifierProxyProvider<AuthManager, ProductsManager>(
           create: (ctx) => ProductsManager(),
+          update: (ctx, authManager, productsManager) {
+            productsManager!.authToken = authManager.authToken;
+            return productsManager;
+          },
         ),
         ChangeNotifierProvider(
           create: (ctx) => CartManager(),
@@ -34,38 +42,54 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (ctx) => OrdersManager(),
         ),
-      ],
-      child: MaterialApp(
-        title: 'My Shop',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: 'Lato',
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.blue,
-          ).copyWith(
-            secondary: Colors.deepOrange,
-          ),
+        ChangeNotifierProvider(
+          create: (context) => AuthManager(),
         ),
-        home: const ProductsOverviewScreen(),
-        routes: {
-          CartScreen.routeName: (ctx) => const CartScreen(),
-          OrdersScreen.routeName: (ctx) => const OrdersScreen(),
-          UserProductScreen.routeName: (ctx) => const UserProductScreen(),
-        },
-        onGenerateRoute: (settings) {
-          if (settings.name == EditProductScreen.routeName) {
-            final productId = settings.arguments as String?;
-            return MaterialPageRoute(
-              builder: (ctx) {
-                return EditProductScreen(
-                  productId != null
-                      ? ctx.read<ProductsManager>().findById(productId)
-                      : null,
+      ],
+      child: Consumer<AuthManager>(
+        builder: (context, authManager, child) {
+          return MaterialApp(
+            title: 'My Shop',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              fontFamily: 'Lato',
+              colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: Colors.blue,
+              ).copyWith(
+                secondary: Colors.deepOrange,
+              ),
+            ),
+            home: authManager.isAuth
+                ? const ProductsOverviewScreen()
+                : FutureBuilder(
+                    future: authManager.tryAutoLogin(),
+                    builder: (context, snapshot) {
+                      return snapshot.connectionState == ConnectionState.waiting
+                          ? const SplashScreen()
+                          : const AuthScreen();
+                    },
+                  ),
+            routes: {
+              CartScreen.routeName: (ctx) => const CartScreen(),
+              OrdersScreen.routeName: (ctx) => const OrdersScreen(),
+              UserProductScreen.routeName: (ctx) => const UserProductScreen(),
+            },
+            onGenerateRoute: (settings) {
+              if (settings.name == EditProductScreen.routeName) {
+                final productId = settings.arguments as String?;
+                return MaterialPageRoute(
+                  builder: (ctx) {
+                    return EditProductScreen(
+                      productId != null
+                          ? ctx.read<ProductsManager>().findById(productId)
+                          : null,
+                    );
+                  },
                 );
-              },
-            );
-          }
-          return null;
+              }
+              return null;
+            },
+          );
         },
       ),
     );

@@ -22,9 +22,19 @@ class UserProductScreen extends StatelessWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () async => print('refresh products'),
-        child: buildUserProductListView(productsManager),
+      body: FutureBuilder(
+        future: _refeshProducts(context),
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return RefreshIndicator(
+            onRefresh: () async => print('refresh products'),
+            child: buildUserProductListView(productsManager),
+          );
+        },
       ),
     );
   }
@@ -56,5 +66,9 @@ class UserProductScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _refeshProducts(BuildContext context) async {
+    await context.read<ProductsManager>().fetchProducts(true);
   }
 }
